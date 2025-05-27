@@ -34,21 +34,27 @@ def CmEval():
     trace_base_end = -1
 
     fit_st = 1
-    fit_end = 15
+    fit_end = 19
 
     # === CONFIGURATION ===
-    ROOT_FOLDER = "/Users/stefanhallermann/Library/CloudStorage/Dropbox/tmp/Sophie"
+    ROOT_FOLDER = "/Users/stefanhallermann/Library/CloudStorage/Dropbox/tmp/Sophie/30ms"
     import_folder = os.path.join(ROOT_FOLDER, "in")
     filename = ("endo30ms.xlsx")
 
     # Format: YYYY-MM-DD_HH-MM-SS
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    output_folder = os.path.join(ROOT_FOLDER, f"output_{timestamp}")
+    output_folder = os.path.join(ROOT_FOLDER, f"output_SH_{timestamp}")
     os.makedirs(output_folder, exist_ok=True)
-    output_folder_traces = os.path.join(ROOT_FOLDER, f"output_{timestamp}/traces")
-    os.makedirs(output_folder_traces, exist_ok=True)
-    output_folder_used_input = os.path.join(ROOT_FOLDER, f"output_{timestamp}/used_input")
+    output_folder_traces_1exp = os.path.join(output_folder, "traces_1exp")
+    os.makedirs(output_folder_traces_1exp, exist_ok=True)
+    output_folder_traces_1expY = os.path.join(output_folder, "traces_1expY")
+    os.makedirs(output_folder_traces_1expY, exist_ok=True)
+    output_folder_used_input = os.path.join(output_folder, "used_input")
     os.makedirs(output_folder_used_input, exist_ok=True)
+    output_folder_fitresults_1exp = os.path.join(output_folder, "fitresults_1exp")
+    os.makedirs(output_folder_fitresults_1exp, exist_ok=True)
+    output_folder_fitresults_1expY = os.path.join(output_folder, "fitresults_1expY")
+    os.makedirs(output_folder_fitresults_1expY, exist_ok=True)
 
     repo_url, commit_hash = get_git_info()
     # Save to file
@@ -88,17 +94,14 @@ def CmEval():
     time = time - t0
     traces = df.iloc[:, 1:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
 
+    df.to_excel(os.path.join(output_folder_used_input, "my_data.xlsx"))
+    #if you use very large traces better use this
     #df.to_parquet(os.path.join(output_folder_used_input, "my_data.parquet"))
     # for later import use: df = pd.read_parquet("my_data.parquet")
 
     # Prepare results table structure
-    fit_results = {
-        "traceName": traceName,
-        "solution": solution,
-        "sequence": sequence,
-        "amplitude": [],
-        "tau": []
-    }
+    fit_results_1exp = []
+    fit_results_1expY = []
 
     trace_count = 0
     print("Analyzing trace:", end="", flush=True)
@@ -129,7 +132,8 @@ def CmEval():
         baseline_fit_line = np.polyval(coeffs, time)
         y_baseline_subtracted = y - baseline_fit_line
 
-        # --- 2. Exponential Fit ---
+        # ----------------------------------
+        # --- Exponential Fit without offset---
         def exp_func(t, A, tau):
             return A * np.exp(-t / tau)
 
@@ -143,46 +147,127 @@ def CmEval():
             print(f"\nFit failed for trace {trace_name}: {e}")
             A_fit, tau_fit = np.nan, np.nan
 
-        fit_results["amplitude"].append(A_fit)
-        fit_results["tau"].append(tau_fit)
+        fit_results_1exp.append({
+            'traceName': trace_name,
+            'solution': solution[trace_count - 1],  # because trace_count starts from 1
+            'sequence': sequence[trace_count - 1],
+            'amplitude': popt[0],
+            'tau': popt[1]
+        })
 
-        # --- 3. Plotting ---
+        # --- Plotting ---
         fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
 
         # Top: Original trace with baseline fit
-        axs[0].plot(original_time, y, label="Original")
-        axs[0].plot(original_time, baseline_fit_line, label="Baseline fit", linestyle="--")
+        axs[0].plot(time, y, label="Original")
+        axs[0].plot(time, baseline_fit_line, label="Baseline fit", linestyle="--")
         axs[0].set_title(f"{trace_name}: Original + Baseline")
         axs[0].legend()
         axs[0].set_ylabel("pF")
 
         # Bottom: Baseline-subtracted with exponential fit
-        axs[1].plot(original_time, y_baseline_subtracted, label="Baseline-subtracted")
+        fit_plot_x = time[time >= 0]
+        fit_plot_y = popt[0] * np.exp(-fit_plot_x / popt[1])
+        axs[1].plot(time, y_baseline_subtracted, label="Baseline-subtracted")
         if not np.isnan(A_fit):
-            axs[1].plot(original_time, exp_func(time, *popt), label="Exp fit", linestyle="--")
+            axs[1].plot(fit_plot_x, fit_plot_y, 'r--', label="Exponential fit")
+            #axs[1].plot(original_time, exp_func(time, *popt), label="Exp fit", linestyle="--")
         axs[1].set_title("Baseline-subtracted + Exp fit")
         axs[1].legend()
         axs[1].set_xlabel("Time (s)")
         axs[1].set_ylabel("pF")
 
         plt.tight_layout()
-        plt.savefig(os.path.join(output_folder_traces, f"{trace_count:03d}_{trace_name}.pdf"))
+        plt.savefig(os.path.join(output_folder_traces_1exp, f"{trace_count:03d}_{trace_name}.pdf"))
+        plt.close()
+
+        # ----------------------------------
+        # --- Exponential Fit with offset---
+        def exp_funcY(t, A, tau, y0):
+            return A * np.exp(-t / tau) + y0
+
+        fit_mask = (time >= fit_st) & (time <= fit_end)
+        try:
+            popt, _ = curve_fit(exp_funcY, time[fit_mask], y_baseline_subtracted[fit_mask],
+                                p0=(np.max(y_baseline_subtracted), 5, 0.0))
+            A_fit, tau_fit, y0_fit = popt
+        except Exception as e:
+            print(f"\nFit failed for trace {trace_name}: {e}")
+            A_fit, tau_fit, y0_fit = np.nan, np.nan, np.nan
+
+        fit_results_1expY.append({
+            'traceName': trace_name,
+            'solution': solution[trace_count - 1],  # because trace_count starts from 1
+            'sequence': sequence[trace_count - 1],
+            'amplitude': popt[0],
+            'tau': popt[1],
+            'y0': popt[2]
+        })
+
+        # --- Plotting ---
+        fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
+
+        # Top: Original trace with baseline fit
+        axs[0].plot(time, y, label="Original")
+        axs[0].plot(time, baseline_fit_line, label="Baseline fit", linestyle="--")
+        axs[0].set_title(f"{trace_name}: Original + Baseline")
+        axs[0].legend()
+        axs[0].set_ylabel("pF")
+
+        # Bottom: Baseline-subtracted with exponential fit
+        fit_plot_x = time[time >= 0]
+        fit_plot_y = popt[0] * np.exp(-fit_plot_x / popt[1]) + popt[2]
+        axs[1].plot(time, y_baseline_subtracted, label="Baseline-subtracted")
+        if not np.isnan(A_fit):
+            axs[1].plot(fit_plot_x, fit_plot_y, 'r--', label="Exponential fit")
+            #axs[1].plot(original_time, exp_func(time, *popt), label="Exp fit", linestyle="--")
+        axs[1].set_title("Baseline-subtracted + Exp fit")
+        axs[1].legend()
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("pF")
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_folder_traces_1expY, f"{trace_count:03d}_{trace_name}.pdf"))
         plt.close()
 
     print(" done!")
 
     # Export analysis results
-    # Assemble DataFrame for export
-    results_df = pd.DataFrame([
-        fit_results["traceName"],
-        fit_results["solution"],
-        fit_results["sequence"],
-        fit_results["amplitude"],
-        fit_results["tau"]
-    ])
-    results_df.index = ["traceName", "solution", "sequence", "amplitude", "tau"]
+    # Convert collected results into a proper DataFrame
+    results_df = pd.DataFrame(fit_results_1exp)
 
-    results_df.to_excel(os.path.join(output_folder, "fit_results.xlsx"), header=False)
+    # Save full results
+    results_df.to_excel(os.path.join(output_folder_fitresults_1exp, "fit_results_all.xlsx"), index=False)
+
+    # Save solution-separated results
+    for sol in results_df['solution'].unique():
+        df_sol = results_df[results_df['solution'] == sol]
+        df_sol.to_excel(os.path.join(output_folder_fitresults_1exp, f"fit_results_{sol}.xlsx"), index=False)
+
+        # Further split by sequence
+        for seq in df_sol['sequence'].unique():
+            df_combo = df_sol[df_sol['sequence'] == seq]
+            fname = f"fit_results_{sol}_seq{seq}.xlsx"
+            df_combo.to_excel(os.path.join(output_folder_fitresults_1exp, fname), index=False)
+
+# Export analysis results
+    # Convert collected results into a proper DataFrame
+    results_df = pd.DataFrame(fit_results_1expY)
+
+    # Save full results
+    results_df.to_excel(os.path.join(output_folder_fitresults_1expY, "fit_results_all.xlsx"), index=False)
+
+    # Save solution-separated results
+    for sol in results_df['solution'].unique():
+        df_sol = results_df[results_df['solution'] == sol]
+        df_sol.to_excel(os.path.join(output_folder_fitresults_1expY, f"fit_results_{sol}.xlsx"), index=False)
+
+        # Further split by sequence
+        for seq in df_sol['sequence'].unique():
+            df_combo = df_sol[df_sol['sequence'] == seq]
+            fname = f"fit_results_{sol}_seq{seq}.xlsx"
+            df_combo.to_excel(os.path.join(output_folder_fitresults_1expY, fname), index=False)
+
 
 if __name__ == '__main__':
     CmEval()
