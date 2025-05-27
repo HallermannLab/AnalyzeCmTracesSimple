@@ -20,7 +20,7 @@ def get_git_info():
     return repo_url, commit_hash
 
 
-def trainEval():
+def CmEval():
     import os
     from datetime import datetime
     import pandas as pd
@@ -222,5 +222,5 @@ def trainEval():
     tmp_df.to_excel(os.path.join(export_folder, "results_charge.xlsx"), index=False)
 
 if __name__ == '__main__':
-    trainEval()
+    CmEval()
 
