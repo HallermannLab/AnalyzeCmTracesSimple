@@ -1,8 +1,3 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
 import subprocess
 import os
 
@@ -28,26 +23,18 @@ def CmEval():
     import matplotlib.pyplot as plt
     import pyarrow
     import fastparquet
+    from scipy.optimize import curve_fit
 
     # Constants (can be adjusted)
     F_To_pF = 1e12
-    ms_To_s = 0.001
-    blank_st = -0.3 * ms_To_s
-    blank_end = 1.5 * ms_To_s
-    base_st = -0.4 * ms_To_s
-    base_end = 0.0 * ms_To_s
-    peak_st = 0.5 * ms_To_s
-    peak_end = 3.0 * ms_To_s
-    charge_start = 0.0 * ms_To_s
-    charge_end = 15.0  * ms_To_s
 
-    trace_base_st = 0  # in seconds
-    trace_base_end = 1
+    t0 = 10.0 # in seconds
 
-    zoomStart1 = 1.73 # in s
-    zoomEnd1  = 1.75
-    zoomStart2 = 1.7  # in s
-    zoomEnd2 = 1.8
+    trace_base_st = -9  # in seconds
+    trace_base_end = -1
+
+    fit_st = 1
+    fit_end = 15
 
     # === CONFIGURATION ===
     ROOT_FOLDER = "/Users/stefanhallermann/Library/CloudStorage/Dropbox/tmp/Sophie"
@@ -96,67 +83,106 @@ def CmEval():
     #input("Press Enter to continue...")
 
 
-    time = df.iloc[:, 0].values  # first column = time
-    time *= ms_To_s   # 2nd column = stimulation trace
-    stim_signal = df.iloc[:, 1].values
-    traces = df.iloc[:, 2:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
+    original_time = df.iloc[:, 0].values  # first column = time
+    time = original_time.copy()
+    time = time - t0
+    traces = df.iloc[:, 1:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
 
     #df.to_parquet(os.path.join(output_folder_used_input, "my_data.parquet"))
     # for later import use: df = pd.read_parquet("my_data.parquet")
+
+    # Prepare results table structure
+    fit_results = {
+        "traceName": traceName,
+        "solution": solution,
+        "sequence": sequence,
+        "amplitude": [],
+        "tau": []
+    }
 
     trace_count = 0
     print("Analyzing trace:", end="", flush=True)
     for trace_name in traceName:
         trace_count += 1
         print(f" {trace_count}", end="", flush=True)
-        original_y = F_To_pF * traces[trace_name].values
+        original_y = F_To_pF * traces.iloc[:, trace_count - 1].values
         y = original_y.copy()
 
-        # Save all plots in one vertical layout
-        fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=False)
-
-        # 1. Original trace
-        axs[0].plot(time, original_y, label="Original")
-        axs[0].set_title(f"Original Trace: {trace_name}")
-        axs[0].set_ylabel("Value")
-
-        # 2. Zoomed version
-        zoom_mask = (time >= zoomStart1) & (time <= zoomEnd1)
-        axs[1].plot(time[zoom_mask], original_y[zoom_mask], label=f"Zoomed ({zoomStart1}–{zoomEnd1}s)", color='green')
-        axs[1].set_title(f"Zoomed Artifact-Removed Trace ({zoomStart1}–{zoomEnd1}s)")
-        axs[1].set_ylabel("Value")
-
-
+        #for checking the area used for fitting and baseline
         """
-        # 3. Artifact-removed trace
-        axs[2].plot(time, y, label="Stim Artifact Removed", color='orange')
-        axs[2].set_title("After Artifact Removal")
-        axs[2].set_ylabel("Value")
-
-        # 4. Zoomed version
-        zoom_mask = (time >= zoomStart1) & (time <= zoomEnd1)
-        axs[3].plot(time[zoom_mask], y[zoom_mask], label=f"Zoomed ({zoomStart1}–{zoomEnd1}s)", color='green')
-        axs[3].set_title(f"Zoomed Artifact-Removed Trace ({zoomStart1}–{zoomEnd1}s)")
-        axs[3].set_ylabel("Value")
-
-        # 5. Zoomed version
-        zoom_mask = (time >= zoomStart2) & (time <= zoomEnd2)
-        axs[4].plot(time[zoom_mask], y[zoom_mask], label=f"Zoomed ({zoomStart2}–{zoomEnd2}s)", color='green')
-        axs[4].set_title(f"Zoomed Artifact-Removed Trace ({zoomStart2}–{zoomEnd2}s)")
-        axs[4].set_xlabel("Time (s)")
-        axs[4].set_ylabel("Value")
+        plt.plot(time, y)
+        plt.axvspan(trace_base_st, trace_base_end, color='red', alpha=0.3, label='Baseline')
+        plt.axvspan(fit_st, fit_end, color='green', alpha=0.3, label='Fit')
+        plt.legend()
+        plt.title(trace_name)
+        plt.show()
         """
 
-        # Tight layout and save
+        # --- 1. Baseline Subtraction ---
+        # Extract baseline indices
+        baseline_mask = (time >= trace_base_st) & (time <= trace_base_end)
+        baseline_time = time[baseline_mask]
+        baseline_values = y[baseline_mask]
+
+        # Fit linear function: y = m*x + b
+        coeffs = np.polyfit(baseline_time, baseline_values, deg=1)
+        baseline_fit_line = np.polyval(coeffs, time)
+        y_baseline_subtracted = y - baseline_fit_line
+
+        # --- 2. Exponential Fit ---
+        def exp_func(t, A, tau):
+            return A * np.exp(-t / tau)
+
+        # Fit exponential from fit_st to fit_end
+        fit_mask = (time >= fit_st) & (time <= fit_end)
+        try:
+            popt, _ = curve_fit(exp_func, time[fit_mask], y_baseline_subtracted[fit_mask],
+                                p0=(np.max(y_baseline_subtracted), 5))
+            A_fit, tau_fit = popt
+        except Exception as e:
+            print(f"\nFit failed for trace {trace_name}: {e}")
+            A_fit, tau_fit = np.nan, np.nan
+
+        fit_results["amplitude"].append(A_fit)
+        fit_results["tau"].append(tau_fit)
+
+        # --- 3. Plotting ---
+        fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
+
+        # Top: Original trace with baseline fit
+        axs[0].plot(original_time, y, label="Original")
+        axs[0].plot(original_time, baseline_fit_line, label="Baseline fit", linestyle="--")
+        axs[0].set_title(f"{trace_name}: Original + Baseline")
+        axs[0].legend()
+        axs[0].set_ylabel("pF")
+
+        # Bottom: Baseline-subtracted with exponential fit
+        axs[1].plot(original_time, y_baseline_subtracted, label="Baseline-subtracted")
+        if not np.isnan(A_fit):
+            axs[1].plot(original_time, exp_func(time, *popt), label="Exp fit", linestyle="--")
+        axs[1].set_title("Baseline-subtracted + Exp fit")
+        axs[1].legend()
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("pF")
+
         plt.tight_layout()
         plt.savefig(os.path.join(output_folder_traces, f"{trace_count:03d}_{trace_name}.pdf"))
         plt.close()
 
-        # Collect results
-
     print(" done!")
 
     # Export analysis results
+    # Assemble DataFrame for export
+    results_df = pd.DataFrame([
+        fit_results["traceName"],
+        fit_results["solution"],
+        fit_results["sequence"],
+        fit_results["amplitude"],
+        fit_results["tau"]
+    ])
+    results_df.index = ["traceName", "solution", "sequence", "amplitude", "tau"]
+
+    results_df.to_excel(os.path.join(output_folder, "fit_results.xlsx"), header=False)
 
 if __name__ == '__main__':
     CmEval()
