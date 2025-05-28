@@ -281,6 +281,6 @@ def CmEval():
 
 
 if __name__ == '__main__':
-    #CmEval()
-    test()
+    CmEval()
+    #test()
 
