@@ -14,6 +14,17 @@ def get_git_info():
 
     return repo_url, commit_hash
 
+def test():
+    import os
+    import analyze_two_groups as myAna
+    from datetime import datetime
+    ROOT_FOLDER = "/Users/stefanhallermann/Library/CloudStorage/Dropbox/tmp/test"
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    output_folder = os.path.join(ROOT_FOLDER, f"output_SH_{timestamp}")
+    group_a = [1.1, 2.3, 2.5, 1.8, 2.0,4,3,4,5,5,5,5,3,6]
+    group_b = [3.0, 3.2, 2.9, 3.1, 2.8,6,7,8,8,7,7,7,8,8,9,9,7.4,5,5,5,5,6]
+    myAna.analyze_two_groups(group_a, group_b, output_folder, group_names=["Control", "Treatment"], title="Effect Size")
+
 
 def CmEval():
     import os
@@ -270,5 +281,6 @@ def CmEval():
 
 
 if __name__ == '__main__':
-    CmEval()
+    #CmEval()
+    test()
 
