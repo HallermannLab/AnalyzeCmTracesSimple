@@ -27,18 +27,24 @@ def analyze_two_groups(group_a, group_b, output_folder, group_names=None, title=
         }
 
     # Inferential statistics
-    try:
-        u_stat, p_mw = mannwhitneyu(group_a, group_b, alternative='two-sided')
-    except Exception as e:
-        u_stat, p_mw = np.nan, np.nan
-        print("Mann-Whitney failed:", e)
+    if len(group_a) > 1 and len(group_b) > 1:
+        try:
+            u_stat, p_mw = mannwhitneyu(group_a, group_b, alternative='two-sided')
+        except Exception as e:
+            u_stat, p_mw = np.nan, np.nan
+            print("Mann-Whitney failed:", e)
+    else:
+        print("Not enough data points for statistical test")
 
-    try:
-        t_stat, p_t = ttest_ind(group_a, group_b, equal_var=False)
-        df_t = len(group_a) + len(group_b) - 2
-    except Exception as e:
-        t_stat, p_t, df_t = np.nan, np.nan, np.nan
-        print("t-test failed:", e)
+    if len(group_a) > 1 and len(group_b) > 1:
+        try:
+            t_stat, p_t = ttest_ind(group_a, group_b, equal_var=False)
+            df_t = len(group_a) + len(group_b) - 2
+        except Exception as e:
+            t_stat, p_t, df_t = np.nan, np.nan, np.nan
+            print("t-test failed:", e)
+    else:
+        print("Not enough data points for statistical test")
 
     # PDF filename
     filename = f"two_group_{title.replace(' ', '_')}_{group_names[0]}_{group_names[1]}.pdf"
@@ -61,11 +67,15 @@ def analyze_two_groups(group_a, group_b, output_folder, group_names=None, title=
         summary_labels = ["Mean", "Median", "SD", "SEM", "IQR", "n"]
         row_labels = [f"val{i+1}" for i in range(n_vals)] + summary_labels
 
-        stats_a = get_stats(group_a)
-        stats_b = get_stats(group_b)
+        if len(group_a) > 1 and len(group_b) > 1:
+            stats_a = get_stats(group_a)
+            stats_b = get_stats(group_b)
 
-        summary_vals_a = [stats_a[k] for k in ["mean", "median", "SD", "SEM", "IQR", "n"]]
-        summary_vals_b = [stats_b[k] for k in ["mean", "median", "SD", "SEM", "IQR", "n"]]
+            summary_vals_a = [stats_a[k] for k in ["mean", "median", "SD", "SEM", "IQR", "n"]]
+            summary_vals_b = [stats_b[k] for k in ["mean", "median", "SD", "SEM", "IQR", "n"]]
+        else:
+            summary_vals_a = [np.nan, np.nan, np.nan, np.nan, np.nan, 1]
+            summary_vals_b = [np.nan, np.nan, np.nan, np.nan, np.nan, 1]
 
         col1 = val_a + summary_vals_a
         col2 = val_b + summary_vals_b
@@ -114,28 +124,30 @@ def analyze_two_groups(group_a, group_b, output_folder, group_names=None, title=
         axes[1].set_title("Mann-Whitney U Test", fontsize=12)
         axes[1].set_ylabel("Value")
 
-        mw_text = f"U = {u_stat:.2f}\nP = {p_mw:.4f}"
-        axes[1].text(0.5, -0.15, mw_text, transform=axes[1].transAxes,
-                     fontsize=10, va='top', ha='left', bbox=dict(facecolor='white', edgecolor='black'))
+        if len(group_a) > 1 and len(group_b) > 1:
+            mw_text = f"U = {u_stat:.2f}\nP = {p_mw:.4f}"
+            axes[1].text(0.5, -0.15, mw_text, transform=axes[1].transAxes,
+                         fontsize=10, va='top', ha='left', bbox=dict(facecolor='white', edgecolor='black'))
 
         # --- Mean ± SEM Column (Col 3) ---
-        means = [stats_a["mean"], stats_b["mean"]]
-        sems = [stats_a["SEM"], stats_b["SEM"]]
-        x_pos = [1, 2]
-        axes[2].bar(x_pos, means, yerr=sems, align='center', alpha=0.6, capsize=10, color=['skyblue', 'salmon'])
-        axes[2].scatter(np.ones(len(group_a)), group_a, color="black", alpha=0.5)
-        axes[2].scatter(2 * np.ones(len(group_b)), group_b, color="black", alpha=0.5)
-        axes[2].set_xticks(x_pos)
-        axes[2].set_xticklabels(group_names)
-        axes[2].set_title("T-Test", fontsize=12)
-        axes[2].set_ylabel("Value")
+        if len(group_a) > 1 and len(group_b) > 1:
+            means = [stats_a["mean"], stats_b["mean"]]
+            sems = [stats_a["SEM"], stats_b["SEM"]]
+            x_pos = [1, 2]
+            axes[2].bar(x_pos, means, yerr=sems, align='center', alpha=0.6, capsize=10, color=['skyblue', 'salmon'])
+            axes[2].scatter(np.ones(len(group_a)), group_a, color="black", alpha=0.5)
+            axes[2].scatter(2 * np.ones(len(group_b)), group_b, color="black", alpha=0.5)
+            axes[2].set_xticks(x_pos)
+            axes[2].set_xticklabels(group_names)
+            axes[2].set_title("T-Test", fontsize=12)
+            axes[2].set_ylabel("Value")
 
-        t_text = f"t = {t_stat:.2f}\nP = {p_t:.4f}\ndf = {df_t}"
-        axes[2].text(0.5, -0.15, t_text, transform=axes[2].transAxes,
-                     fontsize=10, va='top', ha='left', bbox=dict(facecolor='white', edgecolor='black'))
+            t_text = f"t = {t_stat:.2f}\nP = {p_t:.4f}\ndf = {df_t}"
+            axes[2].text(0.5, -0.15, t_text, transform=axes[2].transAxes,
+                         fontsize=10, va='top', ha='left', bbox=dict(facecolor='white', edgecolor='black'))
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         pdf.savefig(fig)
         plt.close(fig)
 
-    print(f"Saved PDF to: {pdf_path}")
+    #print(f"Saved PDF to: {pdf_path}")
