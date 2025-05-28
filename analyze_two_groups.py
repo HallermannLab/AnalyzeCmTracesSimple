@@ -80,12 +80,18 @@ def analyze_two_groups(group_a, group_b, output_folder, group_names=None, title=
         row_labels = val_labels + stats_labels
 
         # Prepare table columns
-        col1 = list(group_a[:num_vals_display]) + compute_stats(group_a)
-        col2 = list(group_b[:num_vals_display]) + compute_stats(group_b)
+        col1 = list(group_a[:num_vals_display])
+        col2 = list(group_b[:num_vals_display])
 
         # Ensure same length as row_labels
         col1 += [np.nan] * (len(row_labels) - len(col1))
         col2 += [np.nan] * (len(row_labels) - len(col2))
+
+        # Prepare table columns
+        col1 = list(col1 + compute_stats(group_a))
+        col2 = list(col2 + compute_stats(group_b))
+
+        print(col1,col2)
 
         # Build DataFrame
         table = pd.DataFrame({labels[0]: col1, labels[1]: col2}, index=row_labels)
