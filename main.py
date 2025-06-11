@@ -1,19 +1,3 @@
-import subprocess
-import os
-
-def get_git_info():
-    try:
-        repo_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode().strip()
-    except Exception:
-        repo_url = "unknown"
-
-    try:
-        commit_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
-    except Exception:
-        commit_hash = "unknown"
-
-    return repo_url, commit_hash
-
 def CmEval():
     import os
     from datetime import datetime
@@ -27,6 +11,7 @@ def CmEval():
     from tkinter import filedialog
     from tkinter import Tk
     import analyze_two_groups as myAna
+    import git_save as myGit
 
     root = Tk()
     root.withdraw()  # Hide the GUI window
@@ -60,15 +45,15 @@ def CmEval():
     output_folder = os.path.join(ROOT_FOLDER, f"output_SH_{timestamp}")
     os.makedirs(output_folder, exist_ok=True)
 
+    output_folder_used_data_and_code = os.path.join(output_folder, "used_data_and_code")
+    os.makedirs(output_folder_used_data_and_code, exist_ok=True)
+
     output_folder_traces_1exp = os.path.join(output_folder, "1exp/traces")
     os.makedirs(output_folder_traces_1exp, exist_ok=True)
     output_folder_traces_1expY = os.path.join(output_folder, "1expY/traces")
     os.makedirs(output_folder_traces_1expY, exist_ok=True)
     output_folder_traces_2exp = os.path.join(output_folder, "2exp/traces")
     os.makedirs(output_folder_traces_2exp, exist_ok=True)
-
-    output_folder_used_input = os.path.join(output_folder, "used_input")
-    os.makedirs(output_folder_used_input, exist_ok=True)
 
     output_folder_fitresults_1exp = os.path.join(output_folder, "1exp/fitresults")
     os.makedirs(output_folder_fitresults_1exp, exist_ok=True)
@@ -84,14 +69,11 @@ def CmEval():
     output_folder_parameterCompare_2exp = os.path.join(output_folder, "2exp/parameterCompare")
     os.makedirs(output_folder_parameterCompare_2exp, exist_ok=True)
 
-    repo_url, commit_hash = get_git_info()
-    # Save to file
-    os.makedirs(output_folder, exist_ok=True)
+    # === GIT SAVE ===
+    # Provide the current script path (only works in .py, not notebooks)
+    script_path = __file__ if '__file__' in globals() else None
+    myGit.save_git_info(output_folder_used_data_and_code, script_path)
 
-    with open(os.path.join(output_folder, "git_version_info.txt"), "w") as f:
-        f.write(f"Repository: {repo_url}\n")
-        f.write(f"Commit: {commit_hash}\n")
-    #print(f"Saved Git info: {repo_url}, commit {commit_hash}")
 
     # === IMPORT DATA ===
     print("Importing traces... ", end="", flush=True)
@@ -123,9 +105,9 @@ def CmEval():
     traces = df.iloc[:, 1:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
 
     # export used data
-    df.to_excel(os.path.join(output_folder_used_input, "my_used_data.xlsx"))
-    #if you use very large traces better use this
-    #df.to_parquet(os.path.join(output_folder_used_input, "my_data.parquet"))
+    df.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_data.xlsx"))
+    # if you use very large traces better use this
+    # df.to_parquet(os.path.join(output_folder_used_data_and_code, "my_data.parquet"))
     # for later import use: df = pd.read_parquet("my_data.parquet")
 
     # save used parameters
@@ -144,7 +126,7 @@ def CmEval():
     df_export = pd.DataFrame([output_values], columns=header)
     df_export = df_export.T.reset_index()
     df_export.columns = ["parameter", "value"]
-    df_export.to_excel(os.path.join(output_folder_used_input, "my_used_parameters.xlsx"), index=False)
+    df_export.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_parameters.xlsx"), index=False)
 
 
     # Prepare results table structure
