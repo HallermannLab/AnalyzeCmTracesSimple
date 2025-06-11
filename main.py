@@ -26,6 +26,7 @@ def CmEval():
     from scipy.signal import medfilt
     from tkinter import filedialog
     from tkinter import Tk
+    import analyze_two_groups as myAna
 
     root = Tk()
     root.withdraw()  # Hide the GUI window
@@ -56,18 +57,32 @@ def CmEval():
 
     # Format: YYYY-MM-DD_HH-MM-SS
     timestamp = datetime.now().strftime("%Y-%m-%d___%H-%M-%S")
-    output_folder = os.path.join(ROOT_FOLDER, f"output_{output_initials}_{timestamp}")
+    output_folder = os.path.join(ROOT_FOLDER, f"output_SH_{timestamp}")
     os.makedirs(output_folder, exist_ok=True)
-    output_folder_traces_1exp = os.path.join(output_folder, "traces_1exp")
+
+    output_folder_traces_1exp = os.path.join(output_folder, "1exp/traces")
     os.makedirs(output_folder_traces_1exp, exist_ok=True)
-    output_folder_traces_1expY = os.path.join(output_folder, "traces_1expY")
+    output_folder_traces_1expY = os.path.join(output_folder, "1expY/traces")
     os.makedirs(output_folder_traces_1expY, exist_ok=True)
+    output_folder_traces_2exp = os.path.join(output_folder, "2exp/traces")
+    os.makedirs(output_folder_traces_2exp, exist_ok=True)
+
     output_folder_used_input = os.path.join(output_folder, "used_input")
     os.makedirs(output_folder_used_input, exist_ok=True)
-    output_folder_fitresults_1exp = os.path.join(output_folder, "fitresults_1exp")
+
+    output_folder_fitresults_1exp = os.path.join(output_folder, "1exp/fitresults")
     os.makedirs(output_folder_fitresults_1exp, exist_ok=True)
-    output_folder_fitresults_1expY = os.path.join(output_folder, "fitresults_1expY")
+    output_folder_fitresults_1expY = os.path.join(output_folder, "1expY/fitresults")
     os.makedirs(output_folder_fitresults_1expY, exist_ok=True)
+    output_folder_fitresults_2exp = os.path.join(output_folder, "2exp/fitresults")
+    os.makedirs(output_folder_fitresults_2exp, exist_ok=True)
+
+    output_folder_parameterCompare_1exp = os.path.join(output_folder, "1exp/parameterCompare")
+    os.makedirs(output_folder_parameterCompare_1exp, exist_ok=True)
+    output_folder_parameterCompare_1expY = os.path.join(output_folder, "1expY/parameterCompare")
+    os.makedirs(output_folder_parameterCompare_1expY, exist_ok=True)
+    output_folder_parameterCompare_2exp = os.path.join(output_folder, "2exp/parameterCompare")
+    os.makedirs(output_folder_parameterCompare_2exp, exist_ok=True)
 
     repo_url, commit_hash = get_git_info()
     # Save to file
@@ -135,6 +150,7 @@ def CmEval():
     # Prepare results table structure
     fit_results_1exp = []
     fit_results_1expY = []
+    fit_results_2exp = []
 
     trace_count = 0
     print("Analyzing trace:", end="", flush=True)
@@ -169,8 +185,9 @@ def CmEval():
         window_size = 11  # must be odd
         y_baseline_subtracted = medfilt(y_baseline_subtracted, kernel_size=window_size)
 
-        # ----------------------------------
-        # --- Exponential Fit without offset---
+        # -------------------------------------------------------------------
+        # ------------------------  1exp  -----------------------------------
+        # -------------------------------------------------------------------
         def exp_func(t, A, tau):
             return A * np.exp(-t / tau)
 
@@ -182,7 +199,7 @@ def CmEval():
             A_fit, tau_fit = popt
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
-            A_fit, tau_fit = np.nan, np.nan
+            popt = [np.nan, np.nan]
 
         fit_results_1exp.append({
             'traceName': trace_name,
@@ -218,7 +235,9 @@ def CmEval():
         plt.savefig(os.path.join(output_folder_traces_1exp, f"{trace_count:03d}_{trace_name}.pdf"))
         plt.close()
 
-        # ----------------------------------
+        # -------------------------------------------------------------------
+        # ------------------------  1expY  -----------------------------------
+        # -------------------------------------------------------------------
         # --- Exponential Fit with offset---
         def exp_funcY(t, A, tau, y0):
             return A * np.exp(-t / tau) + y0
@@ -230,7 +249,7 @@ def CmEval():
             A_fit, tau_fit, y0_fit = popt
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
-            A_fit, tau_fit, y0_fit = np.nan, np.nan, np.nan
+            popt = [np.nan, np.nan, np.nan]
 
         fit_results_1expY.append({
             'traceName': trace_name,
@@ -267,8 +286,66 @@ def CmEval():
         plt.savefig(os.path.join(output_folder_traces_1expY, f"{trace_count:03d}_{trace_name}.pdf"))
         plt.close()
 
+        # -------------------------------------------------------------------
+        # ------------------------  2exp  -----------------------------------
+        # -------------------------------------------------------------------
+        # --- Exponential Fit with 2exp ---
+        def exp_func2(t, A, tau1, aRel, tau2):
+            return A * (1 - aRel) * np.exp(-t / tau1) + A * aRel * np.exp(-t / tau2)
+
+        fit_mask = (time >= fit_st) & (time <= fit_end)
+        try:
+            popt, _ = curve_fit(exp_func2, time[fit_mask], y_baseline_subtracted[fit_mask],
+                                p0=(np.max(y_baseline_subtracted), 2, 0.5, 10),
+                                bounds=([0, 0, 0, 0], [np.inf, np.inf, 1, np.inf]))
+            A_fit, tau1_fit, aRel_fit, tau2_fit = popt
+        except Exception as e:
+            print(f"\nFit failed for trace {trace_name}: {e}")
+            A_fit, tau1_fit, aRel_fit, tau2_fit = np.nan, np.nan, np.nan, np.nan
+            popt = [np.nan, np.nan, np.nan, np.nan]
+
+        fit_results_2exp.append({
+            'traceName': trace_name,
+            'solution': solution[trace_count - 1],  # because trace_count starts from 1
+            'sequence': sequence[trace_count - 1],
+            'amplitude': popt[0],
+            'tau1': popt[1],
+            'aRel': popt[2],
+            'tau2': popt[3]
+        })
+
+        # --- Plotting ---
+        fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
+
+        # Top: Original trace with baseline fit
+        axs[0].plot(time, y, label="Original")
+        axs[0].plot(time, baseline_fit_line, label="Baseline fit", linestyle="--")
+        axs[0].set_title(f"{trace_name}: Original + Baseline")
+        axs[0].legend()
+        axs[0].set_ylabel("pF")
+
+        # Bottom: Baseline-subtracted with exponential fit
+        fit_plot_x = time[time >= 0]
+        fit_plot_y = exp_func2(fit_plot_x, popt[0], popt[1], popt[2], popt[3])
+        axs[1].plot(time, y_baseline_subtracted, label="Baseline-subtracted")
+        if not np.isnan(A_fit):
+            axs[1].plot(fit_plot_x, fit_plot_y, 'r--', label="Exponential fit")
+            # axs[1].plot(original_time, exp_func(time, *popt), label="Exp fit", linestyle="--")
+        axs[1].set_title("Baseline-subtracted + Exp fit")
+        axs[1].legend()
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("pF")
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_folder_traces_2exp, f"{trace_count:03d}_{trace_name}.pdf"))
+        plt.close()
+
     print(" done!")
 
+    print("Output of fit parameters... ", end="", flush=True)
+    # -------------------------------------------------------------------
+    # ------------------------  1exp  -----------------------------------
+    # -------------------------------------------------------------------
     # Export analysis results
     # Convert collected results into a proper DataFrame
     results_df = pd.DataFrame(fit_results_1exp)
@@ -287,7 +364,31 @@ def CmEval():
             fname = f"fit_results_{sol}_seq{seq}.xlsx"
             df_combo.to_excel(os.path.join(output_folder_fitresults_1exp, fname), index=False)
 
-# Export analysis results
+        # Extract parameters values for each group and sequence
+        for tmpStr in ['amplitude', 'tau']:
+            group_c = results_df[(results_df['solution'] == 'c')][tmpStr].tolist()
+            group_g = results_df[(results_df['solution'] == 'g')][tmpStr].tolist()
+
+            group_c_seq1 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 1)][tmpStr].tolist()
+            group_g_seq1 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 1)][tmpStr].tolist()
+
+            group_c_seq2 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 2)][tmpStr].tolist()
+            group_g_seq2 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 2)][tmpStr].tolist()
+
+            # Call analyze_two_groups for each sequence
+            myAna.analyze_two_groups(group_c, group_g, output_folder_parameterCompare_1exp, group_names=["c", "g"],
+                                     title=tmpStr)
+            myAna.analyze_two_groups(group_c_seq1, group_g_seq1, output_folder_parameterCompare_1exp,
+                                     group_names=["c", "g"],
+                                     title=f"{tmpStr} (Sequence 1)")
+            myAna.analyze_two_groups(group_c_seq2, group_g_seq2, output_folder_parameterCompare_1exp,
+                                     group_names=["c", "g"],
+                                     title=f"{tmpStr} (Sequence 2)")
+
+    # -------------------------------------------------------------------
+    # ------------------------  1expY  -----------------------------------
+    # -------------------------------------------------------------------
+    # Export analysis results
     # Convert collected results into a proper DataFrame
     results_df = pd.DataFrame(fit_results_1expY)
 
@@ -304,6 +405,67 @@ def CmEval():
             df_combo = df_sol[df_sol['sequence'] == seq]
             fname = f"fit_results_{sol}_seq{seq}.xlsx"
             df_combo.to_excel(os.path.join(output_folder_fitresults_1expY, fname), index=False)
+
+    # Extract parameters values for each group and sequence
+    for tmpStr in ['amplitude','tau','y0']:
+        group_c = results_df[(results_df['solution'] == 'c')][tmpStr].tolist()
+        group_g = results_df[(results_df['solution'] == 'g')][tmpStr].tolist()
+
+        group_c_seq1 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 1)][tmpStr].tolist()
+        group_g_seq1 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 1)][tmpStr].tolist()
+
+        group_c_seq2 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 2)][tmpStr].tolist()
+        group_g_seq2 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 2)][tmpStr].tolist()
+
+        # Call analyze_two_groups for each sequence
+        myAna.analyze_two_groups(group_c, group_g, output_folder_parameterCompare_1expY, group_names=["c", "g"],
+                           title=tmpStr)
+        myAna.analyze_two_groups(group_c_seq1, group_g_seq1, output_folder_parameterCompare_1expY, group_names=["c", "g"],
+                           title=f"{tmpStr} (Sequence 1)")
+        myAna.analyze_two_groups(group_c_seq2, group_g_seq2, output_folder_parameterCompare_1expY, group_names=["c", "g"],
+                           title=f"{tmpStr} (Sequence 2)")
+
+    # -------------------------------------------------------------------
+    # ------------------------  2exp  -----------------------------------
+    # -------------------------------------------------------------------
+    # Export analysis results
+    # Convert collected results into a proper DataFrame
+    results_df = pd.DataFrame(fit_results_2exp)
+
+    # Save full results
+    results_df.to_excel(os.path.join(output_folder_fitresults_2exp, "fit_results_all.xlsx"), index=False)
+
+    # Save solution-separated results
+    for sol in results_df['solution'].unique():
+        df_sol = results_df[results_df['solution'] == sol]
+        df_sol.to_excel(os.path.join(output_folder_fitresults_2exp, f"fit_results_{sol}.xlsx"), index=False)
+
+        # Further split by sequence
+        for seq in df_sol['sequence'].unique():
+            df_combo = df_sol[df_sol['sequence'] == seq]
+            fname = f"fit_results_{sol}_seq{seq}.xlsx"
+            df_combo.to_excel(os.path.join(output_folder_fitresults_2exp, fname), index=False)
+
+    # Extract parameters values for each group and sequence
+    for tmpStr in ['amplitude','tau1','aRel','tau2']:
+        group_c = results_df[(results_df['solution'] == 'c')][tmpStr].tolist()
+        group_g = results_df[(results_df['solution'] == 'g')][tmpStr].tolist()
+
+        group_c_seq1 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 1)][tmpStr].tolist()
+        group_g_seq1 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 1)][tmpStr].tolist()
+
+        group_c_seq2 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 2)][tmpStr].tolist()
+        group_g_seq2 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 2)][tmpStr].tolist()
+
+        # Call analyze_two_groups for each sequence
+        myAna.analyze_two_groups(group_c, group_g, output_folder_parameterCompare_2exp, group_names=["c", "g"],
+                           title=tmpStr)
+        myAna.analyze_two_groups(group_c_seq1, group_g_seq1, output_folder_parameterCompare_2exp, group_names=["c", "g"],
+                           title=f"{tmpStr} (Sequence 1)")
+        myAna.analyze_two_groups(group_c_seq2, group_g_seq2, output_folder_parameterCompare_2exp, group_names=["c", "g"],
+                           title=f"{tmpStr} (Sequence 2)")
+
+    print(" done!")
 
 
 if __name__ == '__main__':
