@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="cleaned up" />
+    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="add bounds for fit parameters">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,7 +56,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Python.main.executor": "Run",
+    "Python.main.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
@@ -84,6 +87,7 @@
       <workItem from="1749658959633" duration="59000" />
       <workItem from="1749659199347" duration="513000" />
       <workItem from="1749659827756" duration="1043000" />
+      <workItem from="1749661027003" duration="1983000" />
     </task>
     <task id="LOCAL-00001" summary="test for PyCharm branch sync">
       <option name="closed" value="true" />
@@ -117,7 +121,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749660873708</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="add bounds for fit parameters">
+      <option name="closed" value="true" />
+      <created>1749661333752</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1749661333752</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -127,9 +139,26 @@
     <MESSAGE value="test for PyCharm branch sync" />
     <MESSAGE value="copy because of branch sync issues" />
     <MESSAGE value="cleaned up" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleaned up" />
+    <MESSAGE value="add bounds for fit parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="add bounds for fit parameters" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>173</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>168</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749660058016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749662319952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

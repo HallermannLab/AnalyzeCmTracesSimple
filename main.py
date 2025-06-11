@@ -23,6 +23,7 @@ def CmEval():
     import pyarrow
 #    import fastparquet
     from scipy.optimize import curve_fit
+    from scipy.signal import medfilt
     from tkinter import filedialog
     from tkinter import Tk
 
@@ -163,6 +164,10 @@ def CmEval():
         coeffs = np.polyfit(baseline_time, baseline_values, deg=1)
         baseline_fit_line = np.polyval(coeffs, time)
         y_baseline_subtracted = y - baseline_fit_line
+
+        # apply median filter
+        window_size = 11  # must be odd
+        y_baseline_subtracted = medfilt(y_baseline_subtracted, kernel_size=window_size)
 
         # ----------------------------------
         # --- Exponential Fit without offset---
