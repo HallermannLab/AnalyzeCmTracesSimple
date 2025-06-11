@@ -1,6 +1,6 @@
 import subprocess
 import os
-
+#test
 def get_git_info():
     try:
         repo_url = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode().strip()
