@@ -173,7 +173,7 @@ def CmEval():
         fit_mask = (time >= fit_st) & (time <= fit_end)
         try:
             popt, _ = curve_fit(exp_func, time[fit_mask], y_baseline_subtracted[fit_mask],
-                                p0=(np.max(y_baseline_subtracted), 5))
+                                p0=(np.max(y_baseline_subtracted), 5),bounds=([0, 0], [np.inf, np.inf]))
             A_fit, tau_fit = popt
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
@@ -221,7 +221,7 @@ def CmEval():
         fit_mask = (time >= fit_st) & (time <= fit_end)
         try:
             popt, _ = curve_fit(exp_funcY, time[fit_mask], y_baseline_subtracted[fit_mask],
-                                p0=(np.max(y_baseline_subtracted), 5, 0.0))
+                                p0=(np.max(y_baseline_subtracted), 5, 0.0),bounds=([0, 0, -np.inf], [np.inf, np.inf, np.inf]))
             A_fit, tau_fit, y0_fit = popt
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
