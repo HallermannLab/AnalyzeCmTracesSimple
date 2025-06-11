@@ -54,7 +54,7 @@ def CmEval():
 
 
     # Format: YYYY-MM-DD_HH-MM-SS
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d___%H-%M-%S")
     output_folder = os.path.join(ROOT_FOLDER, f"output_{output_initials}_{timestamp}")
     os.makedirs(output_folder, exist_ok=True)
     output_folder_traces_1exp = os.path.join(output_folder, "traces_1exp")
