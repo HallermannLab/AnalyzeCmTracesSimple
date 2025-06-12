@@ -7,7 +7,6 @@ import pyarrow
 #    import fastparquet
 from scipy.optimize import curve_fit
 from scipy.stats import sem  # for standard error of the mean
-from scipy.signal import medfilt
 from tkinter import filedialog
 from tkinter import Tk
 import analyze_two_groups as myAna
@@ -163,6 +162,10 @@ def CmEval():
     time = time - t0
     traces = df.iloc[:, 1:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
 
+    # apply median filter
+    window_size = 11  # must be odd
+    traces = traces.rolling(window=window_size, center=True, min_periods=1).median()
+
     # export used data
     df.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_data.xlsx"))
     # if you use very large traces better use this
@@ -221,10 +224,6 @@ def CmEval():
         coeffs = np.polyfit(baseline_time, baseline_values, deg=1)
         baseline_fit_line = np.polyval(coeffs, time)
         y_baseline_subtracted = y - baseline_fit_line
-
-        # apply median filter
-        window_size = 11  # must be odd
-        y_baseline_subtracted = medfilt(y_baseline_subtracted, kernel_size=window_size)
 
         # -------------------------------------------------------------------
         # ------------------------  1exp  -----------------------------------
