@@ -225,6 +225,9 @@ def CmEval():
         baseline_fit_line = np.polyval(coeffs, time)
         y_baseline_subtracted = y - baseline_fit_line
 
+        # replace the traces in the df with the baseline-subtracted for later plotting:
+        traces.iloc[:, trace_count-1] = y_baseline_subtracted
+
         # -------------------------------------------------------------------
         # ------------------------  1exp  -----------------------------------
         # -------------------------------------------------------------------
