@@ -1,17 +1,76 @@
-def CmEval():
-    import os
-    from datetime import datetime
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import pyarrow
+import os
+from datetime import datetime
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import pyarrow
 #    import fastparquet
-    from scipy.optimize import curve_fit
-    from scipy.signal import medfilt
-    from tkinter import filedialog
-    from tkinter import Tk
-    import analyze_two_groups as myAna
-    import git_save as myGit
+from scipy.optimize import curve_fit
+from scipy.stats import sem  # for standard error of the mean
+from scipy.signal import medfilt
+from tkinter import filedialog
+from tkinter import Tk
+import analyze_two_groups as myAna
+import git_save as myGit
+
+
+def plot_group_traces(time, traces_df, traceName, solution, sequence, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Wrap metadata in a structured list for easy access
+    trace_meta = [
+        {"name": traceName[i], "solution": solution[i], "sequence": sequence[i], "trace": traces_df.iloc[:, i].values}
+        for i in range(len(traceName))
+    ]
+
+    # Define groupings
+    groupings = [
+        ("all", lambda meta: True),
+        ("c", lambda meta: meta["solution"] == "c"),
+        ("g", lambda meta: meta["solution"] == "g"),
+        ("c_seq1", lambda meta: meta["solution"] == "c" and meta["sequence"] == 1),
+        ("c_seq2", lambda meta: meta["solution"] == "c" and meta["sequence"] == 2),
+        ("g_seq1", lambda meta: meta["solution"] == "g" and meta["sequence"] == 1),
+        ("g_seq2", lambda meta: meta["solution"] == "g" and meta["sequence"] == 2),
+    ]
+
+    for group_name, condition in groupings:
+        selected = [meta for meta in trace_meta if condition(meta)]
+        if not selected:
+            print(f"Skipping {group_name}: no data.")
+            continue
+
+        Y = np.array([meta["trace"] for meta in selected])
+        mean_trace = np.nanmean(Y, axis=0)
+        sem_trace = sem(Y, axis=0, nan_policy='omit')
+
+        # Plot
+        fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
+
+        # Top: all traces
+        for y in Y:
+            axs[0].plot(time, y, alpha=0.5)
+        axs[0].set_title(f"Superimposed Traces - {group_name}")
+        axs[0].set_ylabel("Signal (pF)")
+        axs[0].grid(True)
+
+        # Bottom: mean ± SEM
+        axs[1].plot(time, mean_trace, label="Mean", color="black")
+        axs[1].fill_between(time, mean_trace - sem_trace, mean_trace + sem_trace,
+                            color="gray", alpha=0.4, label="SEM")
+        axs[1].set_title(f"Mean ± SEM - {group_name}")
+        axs[1].set_xlabel("Time (s)")
+        axs[1].set_ylabel("Signal (pF)")
+        axs[1].legend()
+        axs[1].grid(True)
+
+        plt.tight_layout()
+        output_path = os.path.join(output_folder, f"traces_{group_name}.pdf")
+        plt.savefig(output_path)
+        plt.close()
+        print(f"Saved plot for group: {group_name} -> {output_path}")
+
+def CmEval():
 
     root = Tk()
     root.withdraw()  # Hide the GUI window
@@ -182,6 +241,7 @@ def CmEval():
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
             popt = [np.nan, np.nan]
+            A_fit, tau_fit = np.nan, np.nan # code could be optimize to yours only one of both options
 
         fit_results_1exp.append({
             'traceName': trace_name,
@@ -232,6 +292,7 @@ def CmEval():
         except Exception as e:
             print(f"\nFit failed for trace {trace_name}: {e}")
             popt = [np.nan, np.nan, np.nan]
+            A_fit, tau_fit, y0_fit  = np.nan, np.nan, np.nan   # code could be optimize to yours only one of both options
 
         fit_results_1expY.append({
             'traceName': trace_name,
@@ -449,6 +510,14 @@ def CmEval():
 
     print(" done!")
 
+    plot_group_traces(
+        time=time,
+        traces_df=traces,
+        traceName=traceName,
+        solution=solution,
+        sequence=sequence,
+        output_folder=os.path.join(output_folder_traces_2exp, "group_plots")
+    )
 
 if __name__ == '__main__':
     CmEval()

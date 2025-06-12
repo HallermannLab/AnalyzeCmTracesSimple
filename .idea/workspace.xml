@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="adding back folder structure and 2exp back from git save">
-      <change afterPath="$PROJECT_DIR$/git_save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="better git save in a file" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +91,7 @@
       <workItem from="1749658959633" duration="59000" />
       <workItem from="1749659199347" duration="513000" />
       <workItem from="1749659827756" duration="1043000" />
-      <workItem from="1749661027003" duration="4295000" />
+      <workItem from="1749661027003" duration="4646000" />
     </task>
     <task id="LOCAL-00001" summary="test for PyCharm branch sync">
       <option name="closed" value="true" />
@@ -153,7 +149,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749664673465</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="better git save in a file">
+      <option name="closed" value="true" />
+      <created>1749666287905</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1749666287905</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +170,8 @@
     <MESSAGE value="add bounds for fit parameters" />
     <MESSAGE value="added median fit" />
     <MESSAGE value="adding back folder structure and 2exp back from git save" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding back folder structure and 2exp back from git save" />
+    <MESSAGE value="better git save in a file" />
+    <option name="LAST_COMMIT_MESSAGE" value="better git save in a file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -185,6 +190,6 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749665675693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749666151262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
