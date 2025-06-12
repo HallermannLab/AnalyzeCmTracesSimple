@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="better git save in a file" />
+    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="slightly changed start parameters for fit">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -64,6 +67,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/stefanhallermann/PycharmProjects/AnalyzeCmTracesSimple",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -72,6 +76,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -92,6 +101,8 @@
       <workItem from="1749659199347" duration="513000" />
       <workItem from="1749659827756" duration="1043000" />
       <workItem from="1749661027003" duration="4646000" />
+      <workItem from="1749733551250" duration="4749000" />
+      <workItem from="1749750400804" duration="1722000" />
     </task>
     <task id="LOCAL-00001" summary="test for PyCharm branch sync">
       <option name="closed" value="true" />
@@ -157,7 +168,47 @@
       <option name="project" value="LOCAL" />
       <updated>1749666287905</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add plots of individual and average traces&#10;not working yet">
+      <option name="closed" value="true" />
+      <created>1749738778502</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1749738778502</updated>
+    </task>
+    <task id="LOCAL-00010" summary="add plots of individual and average traces">
+      <option name="closed" value="true" />
+      <created>1749740113781</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1749740113781</updated>
+    </task>
+    <task id="LOCAL-00011" summary="apply filer to all data">
+      <option name="closed" value="true" />
+      <created>1749741506290</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1749741506290</updated>
+    </task>
+    <task id="LOCAL-00012" summary="apply filer to all data">
+      <option name="closed" value="true" />
+      <created>1749742169809</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1749742169809</updated>
+    </task>
+    <task id="LOCAL-00013" summary="slightly changed start parameters for fit">
+      <option name="closed" value="true" />
+      <created>1749748734321</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1749748734321</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -171,25 +222,24 @@
     <MESSAGE value="added median fit" />
     <MESSAGE value="adding back folder structure and 2exp back from git save" />
     <MESSAGE value="better git save in a file" />
-    <option name="LAST_COMMIT_MESSAGE" value="better git save in a file" />
+    <MESSAGE value="add plots of individual and average traces&#10;not working yet" />
+    <MESSAGE value="add plots of individual and average traces" />
+    <MESSAGE value="apply filer to all data" />
+    <MESSAGE value="slightly changed start parameters for fit" />
+    <option name="LAST_COMMIT_MESSAGE" value="slightly changed start parameters for fit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>172</line>
+          <line>234</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>166</line>
-          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749666151262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1749742799040" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

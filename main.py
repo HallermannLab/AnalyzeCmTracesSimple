@@ -3,12 +3,13 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import pyarrow
 #    import fastparquet
 from scipy.optimize import curve_fit
 from scipy.stats import sem  # for standard error of the mean
 from tkinter import filedialog
 from tkinter import Tk
+
+# my functions
 import analyze_two_groups as myAna
 import git_save as myGit
 
@@ -100,7 +101,7 @@ def CmEval():
 
     # Format: YYYY-MM-DD_HH-MM-SS
     timestamp = datetime.now().strftime("%Y-%m-%d___%H-%M-%S")
-    output_folder = os.path.join(ROOT_FOLDER, f"output_SH_{timestamp}")
+    output_folder = os.path.join(ROOT_FOLDER, f"output_{output_initials}_{timestamp}")
     os.makedirs(output_folder, exist_ok=True)
 
     output_folder_used_data_and_code = os.path.join(output_folder, "used_data_and_code")
