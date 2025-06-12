@@ -516,7 +516,7 @@ def CmEval():
         traceName=traceName,
         solution=solution,
         sequence=sequence,
-        output_folder=os.path.join(output_folder_traces_2exp, "group_plots")
+        output_folder=os.path.join(output_folder, "group_plots")
     )
 
 if __name__ == '__main__':
