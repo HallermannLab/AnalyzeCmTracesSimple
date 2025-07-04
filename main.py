@@ -73,8 +73,18 @@ def plot_group_traces(time, traces_df, traceName, solution, sequence, output_fol
 def CmEval():
 
     root = Tk()
-    root.withdraw()  # Hide the GUI window
-    ROOT_FOLDER = filedialog.askdirectory(title="Select root folder which contains the 'in' Folder")
+    root.withdraw()
+    file_path = filedialog.askopenfilename(title="Select a file")
+
+    if file_path:
+        filename = os.path.basename(file_path)
+        ROOT_FOLDER = os.path.dirname(file_path)
+    else:
+        print("No file selected.")
+        return
+
+        
+
     import_folder = os.path.join(ROOT_FOLDER, "in")
 
     # imported parameters - must be in the "in" folder
