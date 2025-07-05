@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="slightly changed start parameters for fit">
-      <change beforePath="$PROJECT_DIR$/.idea/AnalyzeCmTracesSimple.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AnalyzeCmTracesSimple.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="started with changing the import of the individual parameters">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -113,6 +111,11 @@
       <workItem from="1751658338480" duration="47000" />
       <workItem from="1751658493079" duration="1023000" />
       <workItem from="1751659625083" duration="208000" />
+      <workItem from="1751659981161" duration="438000" />
+      <workItem from="1751719532944" duration="95000" />
+      <workItem from="1751719842483" duration="422000" />
+      <workItem from="1751720489435" duration="157000" />
+      <workItem from="1751721249114" duration="87000" />
     </task>
     <task id="LOCAL-00001" summary="test for PyCharm branch sync">
       <option name="closed" value="true" />
@@ -218,7 +221,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749748734321</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="started with changing the import of the individual parameters">
+      <option name="closed" value="true" />
+      <created>1751660387124</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1751660387124</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,14 +258,15 @@
     <MESSAGE value="add plots of individual and average traces" />
     <MESSAGE value="apply filer to all data" />
     <MESSAGE value="slightly changed start parameters for fit" />
-    <option name="LAST_COMMIT_MESSAGE" value="slightly changed start parameters for fit" />
+    <MESSAGE value="started with changing the import of the individual parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="started with changing the import of the individual parameters" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>244</line>
+          <line>242</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
