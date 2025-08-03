@@ -134,7 +134,7 @@ def analyze_two_groups(group_a, group_b, output_folder, group_names=None, title=
             means = [stats_a["mean"], stats_b["mean"]]
             sems = [stats_a["SEM"], stats_b["SEM"]]
             x_pos = [1, 2]
-            axes[2].bar(x_pos, means, yerr=sems, align='center', alpha=0.6, capsize=10, color=['skyblue', 'salmon'])
+            axes[2].bar(x_pos, means, yerr=sems, align='center', alpha=0.6, capsize=10, color=['skyblue', 'hotpink'])
             axes[2].scatter(np.ones(len(group_a)), group_a, color="black", alpha=0.5)
             axes[2].scatter(2 * np.ones(len(group_b)), group_b, color="black", alpha=0.5)
             axes[2].set_xticks(x_pos)

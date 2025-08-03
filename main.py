@@ -8,6 +8,8 @@ from scipy.optimize import curve_fit
 from scipy.stats import sem  # for standard error of the mean
 from tkinter import filedialog
 from tkinter import Tk
+from paired_plot import paired_boxplot
+
 
 # my functions
 import analyze_two_groups as myAna
@@ -71,30 +73,26 @@ def plot_group_traces(time, traces_df, traceName, solution, sequence, output_fol
         print(f"Saved plot for group: {group_name} -> {output_path}")
 
 def CmEval():
+    output_initials = 'SOP'
+    F_To_pF = 1e+12
+    t0 = 4.8 #for 3ms
+    # t0 = 10 #for 30ms
 
     root = Tk()
-    root.withdraw()  # Hide the GUI window
-    ROOT_FOLDER = filedialog.askdirectory(title="Select root folder which contains the 'in' Folder")
-    import_folder = os.path.join(ROOT_FOLDER, "in")
+    root.withdraw()
+    file_path = filedialog.askopenfilename(title="Select a file")
 
-    # imported parameters - must be in the "in" folder
-    param_file = 'parameters.xlsx'
-    param_values = pd.read_excel(os.path.join(import_folder, param_file), header=None).iloc[:,
-                   1].tolist()  # second row (index 1)
+    if file_path:
+        filename = os.path.basename(file_path)
+        import_folder = os.path.dirname(file_path)
+    else:
+        print("No file selected.")
+        return
 
-    # === Assign values in order ===
-    (
-        filename,
-        output_initials,
-        F_To_pF,
-        t0,
-        trace_base_st,
-        trace_base_end,
-        fit_st,
-        fit_end
-    ) = param_values
+    ROOT_FOLDER = os.path.abspath(os.path.join(import_folder, ".."))
 
     # Example: print some of the loaded parameters to confirm
+    print("Root folder:", ROOT_FOLDER)
     print("Import folder:", import_folder)
     print("Filename:", filename)
 
@@ -138,6 +136,10 @@ def CmEval():
     print("Importing traces... ", end="", flush=True)
     df = pd.read_excel(os.path.join(import_folder, filename), header=[0, 1, 2])
     print("done!")
+    df_save = df.copy(deep=True) #for later export
+
+    #for i, x in enumerate(df.columns.get_level_values(2)):
+    #    print(f"{i}: {x!r} ({type(x).__name__})")
 
     # Extract the second and third header rows
     solution = list(df.columns.get_level_values(1)[1:])  # Skip 'time'
@@ -146,22 +148,29 @@ def CmEval():
     # Optional: convert sequence to integers
     sequence = [int(x) for x in sequence]
 
+    # Extract parameter rows (rows 0–6, assuming the same order as in your screenshot)
+    param_names = ["trace_base_st", "trace_base_end", "fit_st", "fit_end"]
+    param_df = df.iloc[:len(param_names), 1:]  # skip time column
+    param_df.index = param_names
+
+    # Extract time and traces
+    df = df.iloc[len(param_names):, :]  # Drop parameter rows
     # Drop the second and third header levels (keep only first, i.e., 'file1', 'file2', etc.)
     df.columns = df.columns.droplevel([1, 2])
-    # Display or return the results
+    # Drop rows where all data columns except 'time' are NaN
+    df = df.dropna(subset=df.columns[1:], how='all')
+    # Display
     print("traceName:", traceName)
     print("solution:", solution)
     print("sequence:", sequence)
-    # Drop rows where all data columns except 'time' are NaN
-    df = df.dropna(subset=df.columns[1:], how='all')
     print(df.head())  # Cleaned DataFrame
     #input("Press Enter to continue...")
 
 
-    original_time = df.iloc[:, 0].values  # first column = time
+    original_time = df.iloc[:, 0].astype(float).values  # first column = time
     time = original_time.copy()
     time = time - t0
-    traces = df.iloc[:, 1:]  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
+    traces = df.iloc[:, 1:].astype(float)  # remaining columns = traces (is still a data frame, maybe faster with .values, which returns a "D numpy array, without lables)
 
     # apply median filter
     window_size = 11  # must be odd
@@ -169,28 +178,10 @@ def CmEval():
 
     # export used data
     df.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_data.xlsx"))
+    df_save.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_data_original.xlsx"))
     # if you use very large traces better use this
     # df.to_parquet(os.path.join(output_folder_used_data_and_code, "my_data.parquet"))
     # for later import use: df = pd.read_parquet("my_data.parquet")
-
-    # save used parameters
-    param_names = [
-        "filename",
-        "output_initials",
-        "F_To_pF",
-        "t0",
-        "trace_base_st",
-        "trace_base_end",
-        "fit_st",
-        "fit_end"
-    ]
-    header = ["import_folder"] + param_names
-    output_values = [import_folder] + param_values
-    df_export = pd.DataFrame([output_values], columns=header)
-    df_export = df_export.T.reset_index()
-    df_export.columns = ["parameter", "value"]
-    df_export.to_excel(os.path.join(output_folder_used_data_and_code, "my_used_parameters.xlsx"), index=False)
-
 
     # Prepare results table structure
     fit_results_1exp = []
@@ -199,9 +190,16 @@ def CmEval():
 
     trace_count = 0
     print("Analyzing trace:", end="", flush=True)
-    for trace_name in traceName:
+    for idx, trace_name in enumerate(traceName):
         trace_count += 1
-        print(f" {trace_count}", end="", flush=True)
+        print(f" {trace_count} ", end="", flush=True)
+
+        # Get trace-specific parameters
+        trace_base_st = float(param_df.iloc[param_df.index.get_loc("trace_base_st"), idx])
+        trace_base_end = float(param_df.iloc[param_df.index.get_loc("trace_base_end"), idx])
+        fit_st = float(param_df.iloc[param_df.index.get_loc("fit_st"), idx])
+        fit_end = float(param_df.iloc[param_df.index.get_loc("fit_end"), idx])
+
         original_y = F_To_pF * traces.iloc[:, trace_count - 1].values
         y = original_y.copy()
 
@@ -522,6 +520,38 @@ def CmEval():
         output_folder=os.path.join(output_folder, "group_plots")
     )
 
+    # === Paired plots (Stim1 vs Stim2) ===
+    fit_params = {
+        "1exp": ["amplitude", "tau"],
+        "1expY": ["amplitude", "tau", "y0"],
+        "2exp": ["amplitude", "tau1", "aRel", "tau2"]
+    }
+
+    for fit_name, fit_results, output_dir in [
+        ("1exp", fit_results_1exp, output_folder_parameterCompare_1exp),
+        ("1expY", fit_results_1expY, output_folder_parameterCompare_1expY),
+        ("2exp", fit_results_2exp, output_folder_parameterCompare_2exp)
+    ]:
+        df = pd.DataFrame(fit_results)
+        if df.empty:
+            continue  # Falls z. B. keine Daten für diesen Fit-Typ existieren
+
+        for param in fit_params[fit_name]:
+            if param not in df.columns:
+                continue  # Sicherheitscheck – vermeidet KeyError
+
+            for sol in ["c", "g"]:
+                stim1 = df[(df["solution"] == sol) & (df["sequence"] == 1)][param].tolist()
+                stim2 = df[(df["solution"] == sol) & (df["sequence"] == 2)][param].tolist()
+
+                if len(stim1) > 0 and len(stim1) == len(stim2):
+                    paired_boxplot(
+                        group1_vals=stim1,
+                        group2_vals=stim2,
+                        group_label=sol,
+                        parameter_name=f"{param}_{fit_name}",
+                        output_folder=output_dir
+                    )
+
 if __name__ == '__main__':
     CmEval()
-
