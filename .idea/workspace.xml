@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="started with changing the import of the individual parameters">
+    <list default="true" id="bcb2fe55-6900-4fdb-930f-5280bced727c" name="Changes" comment="parameter plotting for each of the three types of fits">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -13,15 +13,8 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="test-for-Cm" />
+    <option name="BRANCH" value="merge-groupanalysis-into-Cm-anal" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -39,201 +32,63 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/HallermannLab/AnalyzeCmTracesSimple.git&quot;,
-    &quot;accountId&quot;: &quot;ab3872d2-3e66-4057-b628-60ec27ccbd03&quot;
-  },
-  &quot;recentNewPullRequestHead&quot;: {
-    &quot;server&quot;: {
-      &quot;useHttp&quot;: false,
-      &quot;host&quot;: &quot;github.com&quot;,
-      &quot;port&quot;: null,
-      &quot;suffix&quot;: null
-    },
-    &quot;owner&quot;: &quot;HallermannLab&quot;,
-    &quot;repository&quot;: &quot;AnalyzeCmTracesSimple&quot;
+    &quot;url&quot;: &quot;https://github.com/HallermannLab/AnalyzeCmTracesSimple&quot;,
+    &quot;accountId&quot;: &quot;a4296858-2ce7-4fcf-8613-c02c50890974&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
 }</component>
-  <component name="ProjectId" id="2yMycE0Q8wwvV4EQsV0HUhgGm8Z" />
+  <component name="ProjectId" id="2xjCmhwg9kxiT3YyFwT3tZVS8aR" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;individal-parameters&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/stefanhallermann/PycharmProjects/AnalyzeCmTracesSimple&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.analyze_two_groups.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "#2 on individal-parameters"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-PY-251.25410.159" />
-        <option value="bundled-python-sdk-e0ed3721d81e-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.159" />
+        <option value="bundled-python-sdk-880ecab49056-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.122" />
       </set>
     </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="23340e5b-1a42-4a68-b16f-49ab2a4c8638" name="Changes" comment="" />
-      <created>1749658814033</created>
+      <changelist id="bcb2fe55-6900-4fdb-930f-5280bced727c" name="Changes" comment="" />
+      <created>1748442257232</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1749658814033</updated>
-      <workItem from="1749658815069" duration="65000" />
-      <workItem from="1749658959633" duration="59000" />
-      <workItem from="1749659199347" duration="513000" />
-      <workItem from="1749659827756" duration="1043000" />
-      <workItem from="1749661027003" duration="4646000" />
-      <workItem from="1749733551250" duration="4749000" />
-      <workItem from="1749750400804" duration="1722000" />
-      <workItem from="1751655773706" duration="790000" />
-      <workItem from="1751656586780" duration="410000" />
-      <workItem from="1751657040275" duration="29000" />
-      <workItem from="1751657919511" duration="30000" />
-      <workItem from="1751658338480" duration="47000" />
-      <workItem from="1751658493079" duration="1023000" />
-      <workItem from="1751659625083" duration="208000" />
-      <workItem from="1751659981161" duration="438000" />
-      <workItem from="1751719532944" duration="95000" />
-      <workItem from="1751719842483" duration="422000" />
-      <workItem from="1751720489435" duration="157000" />
-      <workItem from="1751721249114" duration="87000" />
+      <updated>1748442257232</updated>
     </task>
-    <task id="LOCAL-00001" summary="test for PyCharm branch sync">
+    <task id="LOCAL-00001" summary="now working">
       <option name="closed" value="true" />
-      <created>1749659272073</created>
+      <created>1748443739564</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1749659272073</updated>
+      <updated>1748443739564</updated>
     </task>
-    <task id="LOCAL-00002" summary="copy because of branch sync issues">
+    <task id="LOCAL-00002" summary="parameter plotting for each of the three types of fits">
       <option name="closed" value="true" />
-      <created>1749659521128</created>
+      <created>1748462248680</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1749659521128</updated>
+      <updated>1748462248680</updated>
     </task>
-    <task id="LOCAL-00003" summary="copy because of branch sync issues">
-      <option name="closed" value="true" />
-      <created>1749659688445</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1749659688445</updated>
-    </task>
-    <task id="LOCAL-00004" summary="cleaned up">
-      <option name="closed" value="true" />
-      <created>1749660873708</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1749660873708</updated>
-    </task>
-    <task id="LOCAL-00005" summary="add bounds for fit parameters">
-      <option name="closed" value="true" />
-      <created>1749661333752</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1749661333752</updated>
-    </task>
-    <task id="LOCAL-00006" summary="added median fit">
-      <option name="closed" value="true" />
-      <created>1749663557761</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1749663557761</updated>
-    </task>
-    <task id="LOCAL-00007" summary="adding back folder structure and 2exp back from git save">
-      <option name="closed" value="true" />
-      <created>1749664673464</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1749664673465</updated>
-    </task>
-    <task id="LOCAL-00008" summary="better git save in a file">
-      <option name="closed" value="true" />
-      <created>1749666287905</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1749666287905</updated>
-    </task>
-    <task id="LOCAL-00009" summary="add plots of individual and average traces&#10;not working yet">
-      <option name="closed" value="true" />
-      <created>1749738778502</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1749738778502</updated>
-    </task>
-    <task id="LOCAL-00010" summary="add plots of individual and average traces">
-      <option name="closed" value="true" />
-      <created>1749740113781</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1749740113781</updated>
-    </task>
-    <task id="LOCAL-00011" summary="apply filer to all data">
-      <option name="closed" value="true" />
-      <created>1749741506290</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1749741506290</updated>
-    </task>
-    <task id="LOCAL-00012" summary="apply filer to all data">
-      <option name="closed" value="true" />
-      <created>1749742169809</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1749742169809</updated>
-    </task>
-    <task id="LOCAL-00013" summary="slightly changed start parameters for fit">
-      <option name="closed" value="true" />
-      <created>1749748734321</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1749748734321</updated>
-    </task>
-    <task id="LOCAL-00014" summary="started with changing the import of the individual parameters">
-      <option name="closed" value="true" />
-      <created>1751660387124</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1751660387124</updated>
-    </task>
-    <option name="localTasksCounter" value="15" />
+    <option name="localTasksCounter" value="3" />
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -247,32 +102,11 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="test for PyCharm branch sync" />
-    <MESSAGE value="copy because of branch sync issues" />
-    <MESSAGE value="cleaned up" />
-    <MESSAGE value="add bounds for fit parameters" />
-    <MESSAGE value="added median fit" />
-    <MESSAGE value="adding back folder structure and 2exp back from git save" />
-    <MESSAGE value="better git save in a file" />
-    <MESSAGE value="add plots of individual and average traces&#10;not working yet" />
-    <MESSAGE value="add plots of individual and average traces" />
-    <MESSAGE value="apply filer to all data" />
-    <MESSAGE value="slightly changed start parameters for fit" />
-    <MESSAGE value="started with changing the import of the individual parameters" />
-    <option name="LAST_COMMIT_MESSAGE" value="started with changing the import of the individual parameters" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>242</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="now working" />
+    <MESSAGE value="parameter plotting for each of the three types of fits" />
+    <option name="LAST_COMMIT_MESSAGE" value="parameter plotting for each of the three types of fits" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1751658514075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AnalyzeCmTracesSimple$main.coverage" NAME="main Coverage Results" MODIFIED="1754944791571" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

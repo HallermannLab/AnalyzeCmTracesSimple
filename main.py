@@ -108,6 +108,8 @@ def CmEval():
     os.makedirs(output_folder_traces_1expY, exist_ok=True)
     output_folder_traces_2exp = os.path.join(output_folder, "2exp/traces")
     os.makedirs(output_folder_traces_2exp, exist_ok=True)
+    output_folder_traces_window = os.path.join(output_folder, "window/traces")
+    os.makedirs(output_folder_traces_window, exist_ok=True)
 
     output_folder_fitresults_1exp = os.path.join(output_folder, "1exp/fitresults")
     os.makedirs(output_folder_fitresults_1exp, exist_ok=True)
@@ -115,6 +117,8 @@ def CmEval():
     os.makedirs(output_folder_fitresults_1expY, exist_ok=True)
     output_folder_fitresults_2exp = os.path.join(output_folder, "2exp/fitresults")
     os.makedirs(output_folder_fitresults_2exp, exist_ok=True)
+    output_folder_fitresults_window = os.path.join(output_folder, "window/fitresults")
+    os.makedirs(output_folder_fitresults_window, exist_ok=True)
 
     output_folder_parameterCompare_1exp = os.path.join(output_folder, "1exp/parameterCompare")
     os.makedirs(output_folder_parameterCompare_1exp, exist_ok=True)
@@ -122,6 +126,8 @@ def CmEval():
     os.makedirs(output_folder_parameterCompare_1expY, exist_ok=True)
     output_folder_parameterCompare_2exp = os.path.join(output_folder, "2exp/parameterCompare")
     os.makedirs(output_folder_parameterCompare_2exp, exist_ok=True)
+    output_folder_parameterCompare_window = os.path.join(output_folder, "window/parameterCompare")
+    os.makedirs(output_folder_parameterCompare_window, exist_ok=True)
 
     # === GIT SAVE ===
     # Provide the current script path (only works in .py, not notebooks)
@@ -146,7 +152,7 @@ def CmEval():
     sequence = [int(x) for x in sequence]
 
     # Extract parameter rows (rows 0–6, assuming the same order as in your screenshot)
-    param_names = ["trace_base_st", "trace_base_end", "fit_st", "fit_end"]
+    param_names = ["trace_base_st", "trace_base_end", "fit_st", "fit_end","window1_st", "window1_end","window2_st", "window2_end"]
     param_df = df.iloc[:len(param_names), 1:]  # skip time column
     param_df.index = param_names
 
@@ -184,6 +190,7 @@ def CmEval():
     fit_results_1exp = []
     fit_results_1expY = []
     fit_results_2exp = []
+    fit_results_window = []
 
     trace_count = 0
     print("Analyzing trace:", end="", flush=True)
@@ -380,6 +387,31 @@ def CmEval():
         plt.tight_layout()
         plt.savefig(os.path.join(output_folder_traces_2exp, f"{trace_count:03d}_{trace_name}.pdf"))
         plt.close()
+        
+        # -------------------------------------------------------------------
+        # ------------------------  windows  -----------------------------------
+        # -------------------------------------------------------------------
+        window1_st = float(param_df.iloc[param_df.index.get_loc("window1_st"), idx])
+        window1_end = float(param_df.iloc[param_df.index.get_loc("window1_end"), idx])
+        window2_st = float(param_df.iloc[param_df.index.get_loc("window2_st"), idx])
+        window2_end = float(param_df.iloc[param_df.index.get_loc("window2_end"), idx])
+
+        # Calculate means for windows
+        window1_mask = (time >= window1_st) & (time <= window1_end)
+        window2_mask = (time >= window2_st) & (time <= window2_end)
+
+        window1_mean = np.mean(y_baseline_subtracted[window1_mask])
+        window2_mean = np.mean(y_baseline_subtracted[window2_mask])
+
+        fit_results_window.append({
+            'traceName': trace_name,
+            'solution': solution[trace_count - 1],  # because trace_count starts from 1
+            'sequence': sequence[trace_count - 1],
+            'window1': window1_mean,
+            'window2': window2_mean,
+            'endo_proportion': window2_mean/window1_mean
+        })
+
 
     print(" done!")
 
@@ -505,6 +537,49 @@ def CmEval():
                            title=f"{tmpStr} (Sequence 1)")
         myAna.analyze_two_groups(group_c_seq2, group_g_seq2, output_folder_parameterCompare_2exp, group_names=["c", "g"],
                            title=f"{tmpStr} (Sequence 2)")
+
+    # -------------------------------------------------------------------
+    # ------------------------  window  -----------------------------------
+    # -------------------------------------------------------------------
+    # Export analysis results
+    # Convert collected results into a proper DataFrame
+    results_df = pd.DataFrame(fit_results_window)
+
+    # Save full results
+    results_df.to_excel(os.path.join(output_folder_fitresults_window, "fit_results_all.xlsx"), index=False)
+
+    # Save solution-separated results
+    for sol in results_df['solution'].unique():
+        df_sol = results_df[results_df['solution'] == sol]
+        df_sol.to_excel(os.path.join(output_folder_fitresults_window, f"fit_results_{sol}.xlsx"), index=False)
+
+        # Further split by sequence
+        for seq in df_sol['sequence'].unique():
+            df_combo = df_sol[df_sol['sequence'] == seq]
+            fname = f"fit_results_{sol}_seq{seq}.xlsx"
+            df_combo.to_excel(os.path.join(output_folder_fitresults_window, fname), index=False)
+
+        # Extract parameters values for each group and sequence
+
+        for tmpStr in ['window1', 'window2',"endo_proportion"]:
+            group_c = results_df[(results_df['solution'] == 'c')][tmpStr].tolist()
+            group_g = results_df[(results_df['solution'] == 'g')][tmpStr].tolist()
+
+            group_c_seq1 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 1)][tmpStr].tolist()
+            group_g_seq1 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 1)][tmpStr].tolist()
+
+            group_c_seq2 = results_df[(results_df['solution'] == 'c') & (results_df['sequence'] == 2)][tmpStr].tolist()
+            group_g_seq2 = results_df[(results_df['solution'] == 'g') & (results_df['sequence'] == 2)][tmpStr].tolist()
+
+            # Call analyze_two_groups for each sequence
+            myAna.analyze_two_groups(group_c, group_g, output_folder_parameterCompare_window, group_names=["c", "g"],
+                                     title=tmpStr)
+            myAna.analyze_two_groups(group_c_seq1, group_g_seq1, output_folder_parameterCompare_window,
+                                     group_names=["c", "g"],
+                                     title=f"{tmpStr} (Sequence 1)")
+            myAna.analyze_two_groups(group_c_seq2, group_g_seq2, output_folder_parameterCompare_window,
+                                     group_names=["c", "g"],
+                                     title=f"{tmpStr} (Sequence 2)")
 
     print(" done!")
 
