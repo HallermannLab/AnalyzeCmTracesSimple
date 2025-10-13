@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bcb2fe55-6900-4fdb-930f-5280bced727c" name="Changes" comment="parameter plotting for each of the three types of fits">
+    <list default="true" id="bcb2fe55-6900-4fdb-930f-5280bced727c" name="Changes" comment="commit before branch change">
+      <change beforePath="$PROJECT_DIR$/.idea/AnalyzeCmTracesSimple.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AnalyzeCmTracesSimple.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -19,7 +21,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="individal-parameters" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -32,8 +34,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/HallermannLab/AnalyzeCmTracesSimple&quot;,
-    &quot;accountId&quot;: &quot;a4296858-2ce7-4fcf-8613-c02c50890974&quot;
+    &quot;url&quot;: &quot;https://github.com/HallermannLab/AnalyzeCmTracesSimple.git&quot;,
+    &quot;accountId&quot;: &quot;b93d9d56-d3cf-4914-a7fc-17315e524743&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -53,13 +55,13 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "#2 on individal-parameters"
+    "git-widget-placeholder": "individal-parameters-median-plots"
   }
 }]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-880ecab49056-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.122" />
+        <option value="bundled-python-sdk-657d8234b839-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.74" />
       </set>
     </attachedChunks>
   </component>
