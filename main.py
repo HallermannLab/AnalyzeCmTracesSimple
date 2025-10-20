@@ -13,6 +13,50 @@ from tkinter import Tk
 import analyze_two_groups as myAna
 import git_save as myGit
 
+import numpy as np
+
+
+def bootstrap_median_trace(Y, n_boot=1000, random_state=None):
+    """
+    Compute the median and bootstrap SEM (std of medians) for each time point.
+
+    Parameters
+    ----------
+    Y : array-like, shape (n_traces, n_timepoints)
+        Input traces (NaNs allowed)
+    n_boot : int
+        Number of bootstrap resamples
+    random_state : int, optional
+        Seed for reproducibility
+
+    Returns
+    -------
+    median_trace : array, shape (n_timepoints,)
+        Median across traces at each time point
+    sem_trace : array, shape (n_timepoints,)
+        Bootstrap-based SEM for the median
+    """
+    Y = np.asarray(Y, dtype=float)
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    n_traces, n_timepoints = Y.shape
+    median_trace = np.nanmedian(Y, axis=0)
+
+    # Initialize bootstrap storage
+    boot_medians = np.zeros((n_boot, n_timepoints))
+
+    # Perform bootstrapping
+    for i in range(n_boot):
+        sample_idx = np.random.choice(n_traces, n_traces, replace=True)
+        boot_sample = Y[sample_idx, :]
+        boot_medians[i] = np.nanmedian(boot_sample, axis=0)
+
+    # Standard deviation of bootstrapped medians = nonparametric SEM
+    sem_trace = np.nanstd(boot_medians, axis=0, ddof=1)
+
+    return median_trace, sem_trace
+
 
 def plot_group_traces(time, traces_df, traceName, solution, sequence, output_folder):
     os.makedirs(output_folder, exist_ok=True)
@@ -41,8 +85,9 @@ def plot_group_traces(time, traces_df, traceName, solution, sequence, output_fol
             continue
 
         Y = np.array([meta["trace"] for meta in selected])
-        mean_trace = np.nanmean(Y, axis=0)
-        sem_trace = sem(Y, axis=0, nan_policy='omit')
+        #mean_trace = np.nanmean(Y, axis=0)
+        #sem_trace = sem(Y, axis=0, nan_policy='omit')
+        median_trace, sem_trace = bootstrap_median_trace(Y, n_boot=1000)
 
         # Plot
         fig, axs = plt.subplots(2, 1, figsize=(8, 10), sharex=True)
@@ -55,10 +100,10 @@ def plot_group_traces(time, traces_df, traceName, solution, sequence, output_fol
         axs[0].grid(True)
 
         # Bottom: mean ± SEM
-        axs[1].plot(time, mean_trace, label="Mean", color="black")
-        axs[1].fill_between(time, mean_trace - sem_trace, mean_trace + sem_trace,
+        axs[1].plot(time, median_trace, label="Median", color="black")
+        axs[1].fill_between(time, median_trace - sem_trace, median_trace + sem_trace,
                             color="gray", alpha=0.4, label="SEM")
-        axs[1].set_title(f"Mean ± SEM - {group_name}")
+        axs[1].set_title(f"Median ± SEM - {group_name}")
         axs[1].set_xlabel("Time (s)")
         axs[1].set_ylabel("Signal (pF)")
         axs[1].legend()
